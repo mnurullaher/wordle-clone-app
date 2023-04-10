@@ -16,15 +16,20 @@ buttons.forEach(b => {
 })
 
 typingButtons.forEach(b => {
-    b.addEventListener("click", () => {
-        if(i > 4) return;
-        console.log(wordLine);
-        wordLine.children[i].innerHTML = `<div>${b.getAttribute("data-key")}</div>`;
-        i++;
-    });
+    b.addEventListener("click", typing)
 });
 
-enterBtn.addEventListener("click", () => {
+enterBtn.addEventListener("click", submitWord);
+
+backSpaceBtn.addEventListener("click", deleteLetter);
+
+function typing(e) {
+    if(i > 4) return;
+    wordLine.children[i].innerHTML = `<div>${e.target.getAttribute("data-key")}</div>`;
+    i++;
+}
+
+function submitWord() {
     if (!wordLine.lastElementChild.hasChildNodes()) return;
 
     checkScore(wordLine);
@@ -35,13 +40,13 @@ enterBtn.addEventListener("click", () => {
     } else {
         console.log("game over will be handled here");
     }
-})
+}
 
-backSpaceBtn.addEventListener("click", () => {
+function deleteLetter() {
     if(i < 1) return;
     wordLine.children[i-1].innerHTML = "";
     i--
-})
+}
 
 function checkScore(word) {
     for (let j = 0; j < 5; j++) {
@@ -50,4 +55,5 @@ function checkScore(word) {
     if (answer.toLowerCase() === correctAnswer) {
         alert("Congrats!")
     }
+    answer = "";
 }
