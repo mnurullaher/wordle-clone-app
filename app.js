@@ -9,6 +9,8 @@ let i = 0;
 let answer = "";
 let correctAnswer = "hello";
 
+const keyChars = /^[A-Za-z-ğüşöçıİĞÜŞÖÇ]$/
+
 buttons.forEach(b => {
     if (!(b.getAttribute("data-key") === "enter") && !(b.getAttribute("data-key") === "backSpace")) {
         typingButtons.push(b);
@@ -16,15 +18,27 @@ buttons.forEach(b => {
 })
 
 typingButtons.forEach(b => {
-    b.addEventListener("click", typing)
+    b.addEventListener("click", typingVirtualKeyboar)
 });
 
 enterBtn.addEventListener("click", submitWord);
 
 backSpaceBtn.addEventListener("click", deleteLetter);
 
-function typing(e) {
-    if(i > 4) return;
+document.addEventListener('keyup', (event) => {
+    if (keyChars.test(event.key)) {
+        if (i > 4) return;
+        wordLine.children[i].innerHTML = `<div>${event.key}</div>`;
+        i++;
+    } else if (event.key === "Enter") {
+        submitWord();
+    } else if (event.key === "Backspace") {
+        deleteLetter();
+    }
+});
+
+function typingVirtualKeyboar(e) {
+    if (i > 4) return;
     wordLine.children[i].innerHTML = `<div>${e.target.getAttribute("data-key")}</div>`;
     i++;
 }
@@ -43,8 +57,8 @@ function submitWord() {
 }
 
 function deleteLetter() {
-    if(i < 1) return;
-    wordLine.children[i-1].innerHTML = "";
+    if (i < 1) return;
+    wordLine.children[i - 1].innerHTML = "";
     i--
 }
 
