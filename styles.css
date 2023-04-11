@@ -89,3 +89,18 @@ body {
     width: 50px;
     height: 60px;
 }
+
+.letter.correctLocation {
+    background-color: green;
+    color: #fff;
+}
+
+.letter.wrongLocation {
+    background-color: orange;
+    color: #fff;
+}
+
+.letter.notIncluded {
+    background-color: darkgray;
+    color: #fff;
+}

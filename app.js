@@ -8,6 +8,8 @@ let i = 0;
 
 let answer = "";
 let correctAnswer = "hello";
+let isCorrect = false;
+letGameOver = false;
 
 const keyChars = /^[A-Za-z-ğüşöçıİĞÜŞÖÇ]$/
 
@@ -28,6 +30,7 @@ backSpaceBtn.addEventListener("click", deleteLetter);
 document.addEventListener('keyup', (event) => {
     if (keyChars.test(event.key)) {
         if (i > 4) return;
+        if (isCorrect) return;
         wordLine.children[i].innerHTML = `<div>${event.key}</div>`;
         i++;
     } else if (event.key === "Enter") {
@@ -39,25 +42,32 @@ document.addEventListener('keyup', (event) => {
 
 function typingVirtualKeyboar(e) {
     if (i > 4) return;
+    if (isCorrect) return;
     wordLine.children[i].innerHTML = `<div>${e.target.getAttribute("data-key")}</div>`;
     i++;
 }
 
 function submitWord() {
     if (!wordLine.lastElementChild.hasChildNodes()) return;
+    if (isCorrect) return;
 
     checkScore(wordLine);
 
     if (wordLine.nextElementSibling !== null) {
         wordLine = wordLine.nextElementSibling;
         i = 0;
-    } else {
-        console.log("game over will be handled here");
+    } else if (!isCorrect) {
+        alert("GAME OVER!");
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(element => {
+            element.replaceWith(element.cloneNode(true));
+        });
     }
 }
 
 function deleteLetter() {
     if (i < 1) return;
+    if (isCorrect) return;
     wordLine.children[i - 1].innerHTML = "";
     i--
 }
@@ -65,9 +75,20 @@ function deleteLetter() {
 function checkScore(word) {
     for (let j = 0; j < 5; j++) {
         answer = answer + word.children[j].firstElementChild.innerText;
+        answer = answer.toLowerCase();
+        if (correctAnswer.charAt(j) === answer.charAt(j)) {
+            word.children[j].classList.add("correctLocation")
+        } else if (correctAnswer.includes(answer.charAt(j))) {
+            word.children[j].classList.add("wrongLocation")
+        } else {
+            word.children[j].classList.add("notIncluded")
+        }
     }
-    if (answer.toLowerCase() === correctAnswer) {
-        alert("Congrats!")
-    }
+    
+    if (answer === correctAnswer) {
+        alert("congrats");
+        isCorrect = true;
+
+     }
     answer = "";
 }
