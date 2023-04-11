@@ -1,37 +1,26 @@
-let buttons = document.querySelectorAll(".keyboard-button");
+const nthWord = Math.floor(Math.random() * 1669);
+const keyChars = /^[A-Za-z-ğüşöçıİĞÜŞÖÇ]$/
+const typingButtons = [...document.querySelectorAll('[data-key]')];
+const enterBtn = document.getElementById("enterBtn");
+const backSpaceBtn = document.getElementById("backSpaceBtn");
+const congratsText = document.getElementById("congratsText");
+
 let wordLine = document.querySelector(".word-line");
-let enterBtn = document.getElementById("enterBtn");
-let backSpaceBtn = document.getElementById("backSpaceBtn");
-
-let typingButtons = [];
-let i = 0;
-
-let answer = "";
-let correctAnswer = "bedir".toLocaleLowerCase('TR-tr');
+let columnIndex = 0;
+let gameFinished = false;
 let isCorrect = false;
 
-const keyChars = /^[A-Za-z-ğüşöçıİĞÜŞÖÇ]$/
+function correctAnswer() {
+    return window.__words[nthWord].toLocaleLowerCase('TR-tr');
+}
 
-buttons.forEach(b => {
-    if (!(b.getAttribute("data-key") === "enter") && !(b.getAttribute("data-key") === "backSpace")) {
-        typingButtons.push(b);
-    }
-})
-
-typingButtons.forEach(b => {
-    b.addEventListener("click", typingVirtualKeyboar)
-});
-
+typingButtons.forEach((btn) => btn.onclick = (e) => handleLetter(e.target.getAttribute("data-key")));
 enterBtn.addEventListener("click", submitWord);
-
 backSpaceBtn.addEventListener("click", deleteLetter);
 
 document.addEventListener('keyup', (event) => {
     if (keyChars.test(event.key)) {
-        if (i > 4) return;
-        if (isCorrect) return;
-        wordLine.children[i].innerHTML = `<div>${event.key}</div>`;
-        i++;
+        handleLetter(event.key)
     } else if (event.key === "Enter") {
         submitWord();
     } else if (event.key === "Backspace") {
@@ -39,23 +28,33 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
+function handleLetter(letter) {
+    if (columnIndex > 4) return;
+    if (gameFinished) return;
+    wordLine.children[columnIndex].innerHTML = `<div>${letter}</div>`;
+    columnIndex++;
+}
+
 function typingVirtualKeyboar(e) {
-    if (i > 4) return;
-    if (isCorrect) return;
-    wordLine.children[i].innerHTML = `<div>${e.target.getAttribute("data-key")}</div>`;
-    i++;
+    if (columnIndex > 4) return;
+    if (gameFinished) return;
+    wordLine.children[columnIndex].innerHTML = `<div>${e.target.getAttribute("data-key")}</div>`;
+    columnIndex++;
 }
 
 function submitWord() {
     if (!wordLine.lastElementChild.hasChildNodes()) return;
-    if (isCorrect) return;
+    if (gameFinished) return;
 
-    checkScore(wordLine);
+    checkGivenAnswer(wordLine);
 
     if (wordLine.nextElementSibling !== null) {
         wordLine = wordLine.nextElementSibling;
-        i = 0;
-    } else if (!isCorrect) {
+        columnIndex = 0;
+        return;
+    }
+    gameFinished = true;
+    if (!isCorrect) {
         alert("GAME OVER!");
         const allElements = document.querySelectorAll('*');
         allElements.forEach(element => {
@@ -65,51 +64,40 @@ function submitWord() {
 }
 
 function deleteLetter() {
-    if (i < 1) return;
-    if (isCorrect) return;
-    wordLine.children[i - 1].innerHTML = "";
-    i--
+    if (columnIndex < 1) return;
+    if (gameFinished) return;
+    wordLine.children[columnIndex - 1].innerHTML = "";
+    columnIndex--
 }
 
-function checkScore(word) {
+function addClassToElement(elem, className) {
+    if (className == "correctLocation") {
+        elem.classList.replace("wrongLocation", className);
+    }
+
+    if (className == "wrongLocation" && elem.classList.contains("correctLocation")) {
+        return;
+    }
+    elem.classList.add(className);
+}
+
+function checkGivenAnswer(word) {
+    let answer = ""
     for (let j = 0; j < 5; j++) {
         answer = answer + word.children[j].firstElementChild.innerText;
         answer = answer.toLocaleLowerCase('TR-tr');
-        console.log(correctAnswer);
-        if (correctAnswer.charAt(j) === answer.charAt(j)) {
-
-            word.children[j].classList.add("correctLocation");
-
-            typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
-                .forEach(cb => {
-                    if (cb.classList.contains("wrongLocation")) {
-                        cb.classList.remove("wrongLocation");
-                    }
-                    cb.classList.add("correctLocation")
-                });
-
-        } else if (correctAnswer.includes(answer.charAt(j))) {
-
-            word.children[j].classList.add("wrongLocation");
-
-            typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
-                .forEach(cb => {
-                    if (cb.classList.contains("correctLocation")) return;
-                    cb.classList.add("wrongLocation")
-                });
-
-        } else {
-            word.children[j].classList.add("notIncluded")
-
-            typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
-                .forEach(cb => cb.classList.add("notIncluded"));
-        }
+        const className = correctAnswer().charAt(j) === answer.charAt(j) ?
+            "correctLocation" : correctAnswer().includes(answer.charAt(j)) ?
+            "wrongLocation" : "notIncluded";
+        
+        word.children[j].classList.add(className);
+        typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
+                .forEach(cb => addClassToElement(cb, className));
     }
 
-    if (answer === correctAnswer) {
-        alert("congrats");
+    if (answer === correctAnswer()) {
+        congratsText.style.display = "block";
         isCorrect = true;
+        gameFinished = true
     }
-    console.log(answer);
-    answer = "";
 }
