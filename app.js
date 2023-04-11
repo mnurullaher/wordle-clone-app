@@ -7,7 +7,7 @@ let typingButtons = [];
 let i = 0;
 
 let answer = "";
-let correctAnswer = "hello";
+let correctAnswer = "bedir".toLocaleLowerCase('TR-tr');
 let isCorrect = false;
 
 const keyChars = /^[A-Za-z-ğüşöçıİĞÜŞÖÇ]$/
@@ -74,7 +74,8 @@ function deleteLetter() {
 function checkScore(word) {
     for (let j = 0; j < 5; j++) {
         answer = answer + word.children[j].firstElementChild.innerText;
-        answer = answer.toLowerCase();
+        answer = answer.toLocaleLowerCase('TR-tr');
+        console.log(correctAnswer);
         if (correctAnswer.charAt(j) === answer.charAt(j)) {
 
             word.children[j].classList.add("correctLocation");
@@ -109,5 +110,6 @@ function checkScore(word) {
         alert("congrats");
         isCorrect = true;
     }
+    console.log(answer);
     answer = "";
 }
