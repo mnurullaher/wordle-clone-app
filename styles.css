@@ -90,17 +90,20 @@ body {
     height: 60px;
 }
 
-.letter.correctLocation {
+.correctLocation {
     background-color: green;
     color: #fff;
+    transition: 1s;
 }
 
-.letter.wrongLocation {
+.wrongLocation {
     background-color: orange;
     color: #fff;
+    transition: 1s;
 }
 
-.letter.notIncluded {
-    background-color: darkgray;
+.notIncluded {
+    background-color: rgb(120, 120, 120);
     color: #fff;
+    transition: 1s;
 }

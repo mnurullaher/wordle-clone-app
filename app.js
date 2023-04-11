@@ -9,7 +9,6 @@ let i = 0;
 let answer = "";
 let correctAnswer = "hello";
 let isCorrect = false;
-letGameOver = false;
 
 const keyChars = /^[A-Za-z-ğüşöçıİĞÜŞÖÇ]$/
 
@@ -77,18 +76,38 @@ function checkScore(word) {
         answer = answer + word.children[j].firstElementChild.innerText;
         answer = answer.toLowerCase();
         if (correctAnswer.charAt(j) === answer.charAt(j)) {
-            word.children[j].classList.add("correctLocation")
+
+            word.children[j].classList.add("correctLocation");
+
+            typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
+                .forEach(cb => {
+                    if (cb.classList.contains("wrongLocation")) {
+                        cb.classList.remove("wrongLocation");
+                    }
+                    cb.classList.add("correctLocation")
+                });
+
         } else if (correctAnswer.includes(answer.charAt(j))) {
-            word.children[j].classList.add("wrongLocation")
+
+            word.children[j].classList.add("wrongLocation");
+
+            typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
+                .forEach(cb => {
+                    if (cb.classList.contains("correctLocation")) return;
+                    cb.classList.add("wrongLocation")
+                });
+
         } else {
             word.children[j].classList.add("notIncluded")
+
+            typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
+                .forEach(cb => cb.classList.add("notIncluded"));
         }
     }
-    
+
     if (answer === correctAnswer) {
         alert("congrats");
         isCorrect = true;
-
-     }
+    }
     answer = "";
 }
