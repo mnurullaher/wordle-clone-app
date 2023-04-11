@@ -35,13 +35,6 @@ function handleLetter(letter) {
     columnIndex++;
 }
 
-function typingVirtualKeyboar(e) {
-    if (columnIndex > 4) return;
-    if (gameFinished) return;
-    wordLine.children[columnIndex].innerHTML = `<div>${e.target.getAttribute("data-key")}</div>`;
-    columnIndex++;
-}
-
 function submitWord() {
     if (!wordLine.lastElementChild.hasChildNodes()) return;
     if (gameFinished) return;

@@ -107,3 +107,10 @@ body {
     color: #fff;
     transition: 1s;
 }
+
+.congratsText {
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 10px;
+    display: none;
+}
