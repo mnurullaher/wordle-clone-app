@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Wordle Clone App</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="enter-form" id="enterFormDiv">
+            <input type="text" id="usernameInp">
+            <button id="connectBtn">Connect</button>
+        </div>
+        <div class="game-container d-none" id="gameContainer">
+            <div>
+                <p id="congratsText" class="congratsText">Congratulations!</p>
+                <div class="word-container">
+                    <div class="word-line">
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                    </div>
+                    <div class="word-line">
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                    </div>
+                    <div class="word-line">
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                    </div>
+                    <div class="word-line">
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                    </div>
+                    <div class="word-line">
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                    </div>
+                    <div class="word-line">
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                        <div class="letter"></div>
+                    </div>
+                </div>
+                <div class="keyboard-container">
+                    <div class="keyboard-row">
+                        <button class="keyboard-button" data-key="e">e</button>
+                        <button class="keyboard-button" data-key="r">r</button>
+                        <button class="keyboard-button" data-key="t">t</button>
+                        <button class="keyboard-button" data-key="y">y</button>
+                        <button class="keyboard-button" data-key="u">u</button>
+                        <button class="keyboard-button" data-key="ı">ı</button>
+                        <button class="keyboard-button" data-key="o">o</button>
+                        <button class="keyboard-button" data-key="p">p</button>
+                        <button class="keyboard-button" data-key="ğ">ğ</button>
+                        <button class="keyboard-button" data-key="ü">ü</button>
+                    </div>
+
+                    <div class="keyboard-row">
+                        <div class="spacer-half"></div>
+                        <button class="keyboard-button" data-key="a">a</button>
+                        <button class="keyboard-button" data-key="s">s</button>
+                        <button class="keyboard-button" data-key="d">d</button>
+                        <button class="keyboard-button" data-key="f">f</button>
+                        <button class="keyboard-button" data-key="g">g</button>
+                        <button class="keyboard-button" data-key="h">h</button>
+                        <button class="keyboard-button" data-key="j">j</button>
+                        <button class="keyboard-button" data-key="k">k</button>
+                        <button class="keyboard-button" data-key="l">l</button>
+                        <button class="keyboard-button" data-key="ş">ş</button>
+                        <button class="keyboard-button" data-key="i">i</button>
+                        <div class="spacer-half"></div>
+                    </div>
+
+                    <div class="keyboard-row">
+                        <button class="keyboard-button one-and-a-half" id="enterBtn">enter</button>
+                        <button class="keyboard-button" data-key="z">z</button>
+                        <button class="keyboard-button" data-key="c">c</button>
+                        <button class="keyboard-button" data-key="v">v</button>
+                        <button class="keyboard-button" data-key="b">b</button>
+                        <button class="keyboard-button" data-key="n">n</button>
+                        <button class="keyboard-button" data-key="m">m</button>
+                        <button class="keyboard-button" data-key="ö">ö</button>
+                        <button class="keyboard-button" data-key="ç">ç</button>
+                        <button class="keyboard-button one-and-a-half" id="backSpaceBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20">
+                                <path fill="var(--color-tone-1)"
+                                    d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7.07L2.4 12l4.66-7H22v14zm-11.59-2L14 13.41 17.59 17 19 15.59 15.41 12 19 8.41 17.59 7 14 10.59 10.41 7 9 8.41 12.59 12 9 15.59z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="scorboard"></div>
+        </div>
+    </div>
+
+    <script src="words.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
