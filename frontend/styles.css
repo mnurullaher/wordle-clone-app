@@ -11,6 +11,10 @@ body {
     align-items: center;
 }
 
+.d-none {
+    display: none;
+}
+
 .word-container {
     display: grid;
     gap: 6px;
