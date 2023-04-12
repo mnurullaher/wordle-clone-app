@@ -118,3 +118,7 @@ body {
     margin-bottom: 10px;
     display: none;
 }
+
+.d-flex {
+    display: flex;
+}

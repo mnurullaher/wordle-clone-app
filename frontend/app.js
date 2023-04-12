@@ -9,6 +9,7 @@ const typingButtons = [...document.querySelectorAll('[data-key]')];
 const enterBtn = document.getElementById("enterBtn");
 const backSpaceBtn = document.getElementById("backSpaceBtn");
 const congratsText = document.getElementById("congratsText");
+const scorBoard = document.querySelector(".scorboard")
 
 let wordLine = document.querySelector(".word-line");
 let columnIndex = 0;
@@ -18,24 +19,34 @@ let username;
 let resp = [];
 
 function sendMsgToServer(type, payload) {
-    webSocket.send(JSON.stringify({type: type, payload}))
+    webSocket.send(JSON.stringify({ type: type, payload }))
 }
 
 webSocket.onmessage = (event => {
+    console.log(event);
     const data = JSON.parse(event.data)
     if (!!data.type && data.type == "CONNECT_SUCCESS") {
-      console.log("Successfully connected!")
-      enterForm.classList.add("d-none")
-      gameContainerDiv.classList.remove("d-none")
-      document.addEventListener('keyup', (event) => {
-        if (keyChars.test(event.key)) {
-            handleLetter(event.key)
-        } else if (event.key === "Enter") {
-            submitWord();
-        } else if (event.key === "Backspace") {
-            deleteLetter();
-        }
-    });    
+        console.log("Successfully connected!")
+        enterForm.classList.add("d-none")
+        gameContainerDiv.classList.replace("d-none", "d-flex")
+        document.addEventListener('keyup', (event) => {
+            if (keyChars.test(event.key)) {
+                handleLetter(event.key)
+            } else if (event.key === "Enter") {
+                submitWord();
+            } else if (event.key === "Backspace") {
+                deleteLetter();
+            }
+        });
+    }
+
+    if (!!data.type && data.type == "USER_LIST") {
+        scorBoard.innerHTML = ""
+        data.payload.forEach(user => {
+            let pointTable = document.createElement("p")
+            pointTable.innerText = user.username + " = " + user.point
+            scorBoard.appendChild(pointTable);
+        })
     }
 
     if (!!data.type && data.type == "SUBMIT_RESPONSE") {
@@ -46,7 +57,7 @@ webSocket.onmessage = (event => {
             const className = cellResult == "CL" ? "correctLocation" : cellResult == "WL" ? "wrongLocation" : "notIncluded"
             wordLine.children[i].classList.add(className);
             typingButtons.filter(b => b.getAttribute("data-key") === userAnswer.charAt(i))
-                    .forEach(cb => addClassToElement(cb, className));    
+                .forEach(cb => addClassToElement(cb, className));
         }
         if (resp.every(cl => cl == "CL")) {
             congratsText.style.display = "block";
@@ -62,13 +73,13 @@ webSocket.onmessage = (event => {
             gameFinished = false
             alert("game over!")
         }
-      }
-  })
-  
-  connectBtn.onclick = () => {
+    }
+})
+
+connectBtn.onclick = () => {
     username = usernameInp.value
     sendMsgToServer('CONNECT', username)
-  }
+}
 
 function correctAnswer() {
     return window.__words[nthWord].toLocaleLowerCase('TR-tr');
@@ -87,9 +98,9 @@ function handleLetter(letter) {
 
 function getUserAnswer() {
     return [...wordLine.children]
-    .map(e => e.firstElementChild.innerText)
-    .reduce((l, r) => l + r)
-    .toLocaleLowerCase('TR-tr');
+        .map(e => e.firstElementChild.innerText)
+        .reduce((l, r) => l + r)
+        .toLocaleLowerCase('TR-tr');
 }
 
 function submitWord() {
@@ -100,7 +111,7 @@ function submitWord() {
     return
     checkGivenAnswer(wordLine);
 
-    
+
     gameFinished = true;
     if (!isCorrect) {
         alert("GAME OVER!");
@@ -136,11 +147,11 @@ function checkGivenAnswer(word) {
         answer = answer.toLocaleLowerCase('TR-tr');
         const className = correctAnswer().charAt(j) === answer.charAt(j) ?
             "correctLocation" : correctAnswer().includes(answer.charAt(j)) ?
-            "wrongLocation" : "notIncluded";
-        
+                "wrongLocation" : "notIncluded";
+
         word.children[j].classList.add(className);
         typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
-                .forEach(cb => addClassToElement(cb, className));
+            .forEach(cb => addClassToElement(cb, className));
     }
 
     if (answer === correctAnswer()) {

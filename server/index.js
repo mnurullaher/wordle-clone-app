@@ -1,7 +1,7 @@
 import WebSocket, { WebSocketServer } from 'ws'
 import words from './words.js'
 
-const userList = [];
+let userList = [];
 const currentWord = words[0].toLocaleLowerCase("TR-tr");
 
 const wss = new WebSocketServer({
@@ -28,23 +28,29 @@ wss.on('listening', () => {
 })
 
 wss.on('connection', function connection(ws) {
+  let username;
   console.log("new connection!")
   ws.on('error', console.error);
+  ws.on('close', () => {
+    userList = userList.filter(u => u.username !== username)
+    broadcastUserList()
+  })
 
-  //{type: 'CONNECT', payload: username}
   ws.on('message', function message(rawData) {
     console.log('received: %s', rawData)
     const data = JSON.parse(rawData)
-    let username;
+    
     if (data.type == "CONNECT") {
       console.log("New user connected!", data.payload)
       username = data.payload
       userList.push({
         username,
         leftTrial: 5,
-        points: 0
+        points: 0,
+        ws
       })
       ws.send(JSON.stringify({type: "CONNECT_SUCCESS"}))
+      broadcastUserList()
     }
     if (data.type == "USER_SUBMIT") {
       handleUserSubmit(ws, username, data.payload)
@@ -59,4 +65,15 @@ function handleUserSubmit(ws, username, payload) {
     resp.push(currentWord.charAt(index) == char ? 'CL' : currentWord.includes(char) ? 'WL' : 'NI')
   }
   ws.send(JSON.stringify({type: "SUBMIT_RESPONSE", payload: resp}))
+  if (payload === currentWord) {
+    userList.filter(user => user.username === username)[0].points++
+    broadcastUserList()
+  }
+}
+
+function broadcastUserList() {
+  let usersInfo = userList.map(u => ({username: u.username, point: u.points}))
+  userList.forEach(u => {
+    u.ws.send(JSON.stringify({type: "USER_LIST", payload: usersInfo}))
+  })
 }
