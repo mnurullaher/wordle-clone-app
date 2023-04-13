@@ -1,8 +1,10 @@
 import WebSocket, { WebSocketServer } from 'ws'
 import words from './words.js'
 
+const nthWord = Math.floor(Math.random() * 1669);
+
 let userList = [];
-const currentWord = words[0].toLocaleLowerCase("TR-tr");
+const currentWord = words[nthWord].toLocaleLowerCase("TR-tr");
 
 const wss = new WebSocketServer({
   port: 8080,
@@ -31,6 +33,7 @@ wss.on('connection', function connection(ws) {
   let username;
   console.log("new connection!")
   ws.on('error', console.error);
+
   ws.on('close', () => {
     userList = userList.filter(u => u.username !== username)
     broadcastUserList()
@@ -51,6 +54,7 @@ wss.on('connection', function connection(ws) {
       })
       ws.send(JSON.stringify({type: "CONNECT_SUCCESS"}))
       broadcastUserList()
+      ws.send(JSON.stringify({type: "CORRECT_ANSWER", payload: currentWord}))
     }
     if (data.type == "USER_SUBMIT") {
       handleUserSubmit(ws, username, data.payload)

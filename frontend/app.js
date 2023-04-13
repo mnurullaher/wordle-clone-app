@@ -3,7 +3,6 @@ const enterForm = document.querySelector("#enterFormDiv")
 const connectBtn = document.querySelector("#connectBtn")
 const usernameInp = document.querySelector("#usernameInp")
 const gameContainerDiv = document.querySelector("#gameContainer")
-const nthWord = Math.floor(Math.random() * 1669);
 const keyChars = /^[A-Za-z-ğüşöçıİĞÜŞÖÇ]$/
 const typingButtons = [...document.querySelectorAll('[data-key]')];
 const enterBtn = document.getElementById("enterBtn");
@@ -17,6 +16,7 @@ let gameFinished = false;
 let isCorrect = false;
 let username;
 let resp = [];
+let correctAnswer = "";
 
 function sendMsgToServer(type, payload) {
     webSocket.send(JSON.stringify({ type: type, payload }))
@@ -25,6 +25,7 @@ function sendMsgToServer(type, payload) {
 webSocket.onmessage = (event => {
     console.log(event);
     const data = JSON.parse(event.data)
+
     if (!!data.type && data.type == "CONNECT_SUCCESS") {
         console.log("Successfully connected!")
         enterForm.classList.add("d-none")
@@ -40,13 +41,8 @@ webSocket.onmessage = (event => {
         });
     }
 
-    if (!!data.type && data.type == "USER_LIST") {
-        scorBoard.innerHTML = ""
-        data.payload.forEach(user => {
-            let pointTable = document.createElement("p")
-            pointTable.innerText = user.username + " = " + user.point
-            scorBoard.appendChild(pointTable);
-        })
+    if (!!data.type && data.type == "CORRECT_ANSWER") {
+        correctAnswer = data.payload
     }
 
     if (!!data.type && data.type == "SUBMIT_RESPONSE") {
@@ -71,18 +67,23 @@ webSocket.onmessage = (event => {
             return;
         } else {
             gameFinished = false
-            alert("game over!")
+            alert("GAME OVER! Correct answer was " + correctAnswer)
         }
+    }
+
+    if (!!data.type && data.type == "USER_LIST") {
+        scorBoard.innerHTML = ""
+        data.payload.forEach(user => {
+            let pointTable = document.createElement("p")
+            pointTable.innerText = user.username + " = " + user.point
+            scorBoard.appendChild(pointTable);
+        })
     }
 })
 
 connectBtn.onclick = () => {
     username = usernameInp.value
     sendMsgToServer('CONNECT', username)
-}
-
-function correctAnswer() {
-    return window.__words[nthWord].toLocaleLowerCase('TR-tr');
 }
 
 typingButtons.forEach((btn) => btn.onclick = (e) => handleLetter(e.target.getAttribute("data-key")));
@@ -108,18 +109,6 @@ function submitWord() {
     if (gameFinished) return;
 
     sendMsgToServer('USER_SUBMIT', getUserAnswer())
-    return
-    checkGivenAnswer(wordLine);
-
-
-    gameFinished = true;
-    if (!isCorrect) {
-        alert("GAME OVER!");
-        const allElements = document.querySelectorAll('*');
-        allElements.forEach(element => {
-            element.replaceWith(element.cloneNode(true));
-        });
-    }
 }
 
 function deleteLetter() {
@@ -140,23 +129,3 @@ function addClassToElement(elem, className) {
     elem.classList.add(className);
 }
 
-function checkGivenAnswer(word) {
-    let answer = ""
-    for (let j = 0; j < 5; j++) {
-        answer = answer + word.children[j].firstElementChild.innerText;
-        answer = answer.toLocaleLowerCase('TR-tr');
-        const className = correctAnswer().charAt(j) === answer.charAt(j) ?
-            "correctLocation" : correctAnswer().includes(answer.charAt(j)) ?
-                "wrongLocation" : "notIncluded";
-
-        word.children[j].classList.add(className);
-        typingButtons.filter(b => b.getAttribute("data-key") === answer.charAt(j))
-            .forEach(cb => addClassToElement(cb, className));
-    }
-
-    if (answer === correctAnswer()) {
-        congratsText.style.display = "block";
-        isCorrect = true;
-        gameFinished = true
-    }
-}
